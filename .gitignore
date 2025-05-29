@@ -1,0 +1,114 @@
+# Visual Studio / Rider / VSCode cache files and folders
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+
+# Rider
+*.sln.iml
+
+# User-specific files (including launch settings)
+*.userprefs
+launchSettings.json
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of restore
+packages/
+
+# .NET Core / .NET 5+ files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop files
+StyleCopReport.xml
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Xamarin specific
+*.apk
+*.ap_
+*.aab
+*.xap
+*.xcuserstate
+
+# Android/Java generated files
+*.dex
+*.class
+
+# iOS specific
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Mac specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Rider caches
+.idea/
+*.sln.iml
+
+# JetBrains Rider local history
+.localhistory/
+
+# Azure Pipelines artifacts
+*.azurepipelines.yml
+
+# Others
+*.pdb
+*.mdb
+
+# .NET MAUI platform-specific files
+platforms/android/.gradle/
+platforms/android/build/
+platforms/android/app/build/
+platforms/android/.idea/
+
+# Xamarin Android cache
+obj/Debug/android/
+obj/Release/android/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Git LFS lock files
+*.lock
+
+# Backup files
+*.bak
+*.orig
+*.old
+
+# Node modules (if using any node tooling)
+node_modules/
+
+# Ignore .NET global.json lock files (if any)
+global.json.lock
+
+# Ignore logs
+*.log
+
+# Ignore test results
+TestResults/
+*.trx
+
+# Ignore IIS Express files
+.IISExpress/
+iisexpress/
