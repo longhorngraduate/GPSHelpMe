@@ -1,0 +1,9 @@
+@GPSHelpMeWebAPI_HostAddress = http://localhost:5268
+
+### Get weather forecast
+GET {{GPSHelpMeWebAPI_HostAddress}}/api/weatherforecast/forecast
+Accept: application/json
+
+### Get items
+GET {{GPSHelpMeWebAPI_HostAddress}}/api/weatherforecast/items
+Accept: application/json
