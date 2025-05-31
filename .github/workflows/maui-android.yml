@@ -1,0 +1,96 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # ------------------------------ Check Folders Exists ------------------------------
+    - name: List NuGet cache folder (Windows)
+      run: |
+        if (Test-Path "$env:USERPROFILE\.nuget\packages") {
+          Get-ChildItem "$env:USERPROFILE\.nuget\packages" -Recurse
+        } else {
+          Write-Output "No NuGet cache folder found"
+        }
+      shell: pwsh
+
+    - name: List .NET SDK workspaces cache folder (Windows)
+      run: |
+        if (Test-Path "$env:USERPROFILE\.dotnet") {
+          Get-ChildItem "$env:USERPROFILE\.dotnet" -Recurse
+        } else {
+          Write-Output "No .NET SDK workspaces cache folder found"
+        }
+      shell: pwsh
+    
+    # ------------------------------ Caches ------------------------------
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.nuget/packages  # NuGet global package cache
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Cache .NET SDK workspaces (optional)
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.dotnet            # dotnet SDK cache
+        key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-dotnet-
+
+    - name: Cache MSBuild artifacts (optional)
+      uses: actions/cache@v4
+      with:
+        path: |
+          **/bin
+          **/obj              # build artifacts across projects
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+    # ------------------------------ DotNet Steps ------------------------------
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    # Restore dependencies
+    #	Uses the NuGet cache - avoids redownloading packages.
+    - name: Restore dependencies
+      run: dotnet restore GPSHelpMeMAUI/GPSHelpMeMAUI.csproj
+    
+    # Build
+    #	Benefits from MSBuild incremental caching and warm file system from NuGet cache.
+    - name: Build
+      run: dotnet build GPSHelpMeMAUI/GPSHelpMeMAUI.csproj -f net8.0-android -c Release --no-restore
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    
+    # Publish APK
+    #	Slightly faster if build artifacts are reused (not a full rebuild).
+    - name: Publish APK
+      run: dotnet publish GPSHelpMeMAUI/GPSHelpMeMAUI.csproj -f net8.0-android -c Release -o ./output
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: ./output
