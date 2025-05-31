@@ -17,22 +17,58 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    # ------------------------------ Caches ------------------------------
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.nuget/packages  # NuGet global package cache
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Cache .NET SDK workspaces (optional)
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.dotnet            # dotnet SDK cache
+        key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-dotnet-
+
+    - name: Cache MSBuild artifacts (optional)
+      uses: actions/cache@v4
+      with:
+        path: |
+          **/bin
+          **/obj              # build artifacts across projects
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+    # ------------------------------ DotNet Steps ------------------------------
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
     
+    # Restore dependencies
+    #	Uses the NuGet cache - avoids redownloading packages.
     - name: Restore dependencies
       run: dotnet restore GPSHelpMeMAUI/GPSHelpMeMAUI.csproj
     
+    # Build
+    #	Benefits from MSBuild incremental caching and warm file system from NuGet cache.
     - name: Build
       run: dotnet build GPSHelpMeMAUI/GPSHelpMeMAUI.csproj -f net8.0-android -c Release --no-restore
     
     - name: Test
       run: dotnet test --no-build --verbosity normal
     
+    # Publish APK
+    #	Slightly faster if build artifacts are reused (not a full rebuild).
     - name: Publish APK
-      run: dotnet publish GPSHelpMeMAUI.sln -f net8.0-android -c Release -o ./output
+      run: dotnet publish GPSHelpMeMAUI/GPSHelpMeMAUI.sln -f net8.0-android -c Release -o ./output
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
