@@ -16,6 +16,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    # ------------------------------ Check Folders Exists ------------------------------
+    - name: List NuGet cache folder
+      run: ls -la ~/.nuget/packages || echo "No NuGet cache folder found"
+    
+    - name: List .NET SDK workspaces cache folder
+      run: ls -la ~/.dotnet || echo "No .NET SDK workspaces cache folder found"
+
     
     # ------------------------------ Caches ------------------------------
     - name: Cache NuGet packages
